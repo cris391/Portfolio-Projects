@@ -15,8 +15,18 @@ Project is created with:
 ## Setup
 To run this project
 
+Server
 ```
-$ cd ../lorem
-$ dotnet ...
-$ dotnet ...
+$ cd ../Server
+$ dotnet run
+```
+Client
+```
+$ cd ../Client
+$ dotnet run
+```
+Tests
+```
+$ cd ../Tests
+$ dotnet test
 ```
