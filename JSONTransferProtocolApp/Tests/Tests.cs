@@ -44,7 +44,7 @@ namespace Tests
 
     /*    Method Tests     */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_RequestWithoutMethod_MissingMethodError()
     {
       var client = Connect();
@@ -52,7 +52,8 @@ namespace Tests
       client.SendRequest("{}");
 
       var response = client.ReadResponse();
-
+      // Console.WriteLine(response.ToJson());
+      // Console.WriteLine(response.Status);
       Assert.True(response.Status.ToLower().Contains("missing method"));
     }
 
@@ -629,8 +630,12 @@ namespace Tests
         do
         {
           bytesread = strm.Read(resp, 0, resp.Length);
+          // Console.WriteLine(bytesread);
+          // Console.WriteLine("@@@@@@@");
+          // Console.WriteLine(bytesread);
+          // Console.WriteLine("######");
           memStream.Write(resp, 0, bytesread);
-
+          var responseData2 = Encoding.UTF8.GetString(memStream.ToArray());
         } while (bytesread == 2048);
 
         var responseData = Encoding.UTF8.GetString(memStream.ToArray());
