@@ -1,4 +1,4 @@
-# Portfolio-Projects
+# Portfolio Projects
 
 A collections of projects developed while studying at Roskilde University
 

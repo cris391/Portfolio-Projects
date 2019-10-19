@@ -32,10 +32,17 @@ namespace Server
         {
           Console.WriteLine("Waiting for a connection...");
           var client = server.AcceptTcpClient();
-          Console.WriteLine($"A client connected!");
+          var initStream = client.GetStream();
+          var initBuffer = new byte[client.ReceiveBufferSize];
+          var initReceiveBufferCount = initStream.Read(initBuffer, 0, initBuffer.Length);
+          var initMsg = Encoding.UTF8.GetString(initBuffer, 0, initReceiveBufferCount);
+          if (initMsg == "initialize")
+          {
+            Console.WriteLine($"A client connected!");
+            Thread t = new Thread(new ParameterizedThreadStart(HandleDevice));
+            t.Start(client);
 
-          Thread t = new Thread(new ParameterizedThreadStart(HandleDevice));
-          t.Start(client);
+          }
         }
       }
       catch (SocketException e)
