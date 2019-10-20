@@ -21,9 +21,9 @@ namespace Client
         client.Connect(IPAddress.Loopback, 5000);
 
         var stream = client.GetStream();
-        var initMsg = "initialize";
-        var initBuffer = Encoding.UTF8.GetBytes(initMsg);
-        stream.Write(initBuffer, 0, initBuffer.Length);
+        // var initMsg = "initialize";
+        // var initBuffer = Encoding.UTF8.GetBytes(initMsg);
+        // stream.Write(initBuffer, 0, initBuffer.Length);
 
         while (true)
         {
