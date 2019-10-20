@@ -80,7 +80,7 @@ namespace Tests
       Assert.Contains("illegal method", response.Status.ToLower());
     }
 
-    [Theory(Skip = "justbecause")]
+    [Theory]
     [InlineData("create")]
     [InlineData("read")]
     [InlineData("update")]
@@ -98,6 +98,7 @@ namespace Tests
       client.SendRequest(request.ToJson());
 
       var response = client.ReadResponse();
+      Console.WriteLine(response);
 
       Assert.Contains("missing resource", response.Status.ToLower());
     }

@@ -97,6 +97,10 @@ namespace Server
         {
           response.Status = "illegal method";
         }
+        else if (request.Path == null)
+        {
+          response.Status = "missing resource";
+        }
 
         // implement some kind of cleanup if client sends close message(server sid)
         // if (msg == "exit2") client.Close();
