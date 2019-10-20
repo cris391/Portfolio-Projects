@@ -292,7 +292,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson().ToLower(), response.ToJson().ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_DeleteWithOutPathId_StatusBadRequest()
     {
       var client = Connect();
@@ -316,7 +316,7 @@ namespace Tests
 
     /* Read tests */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_ReadCategories_StatusOkAndListOfCategoriesInBody()
     {
       var client = Connect();

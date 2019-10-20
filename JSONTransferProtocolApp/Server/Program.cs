@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -157,13 +158,26 @@ namespace Server
               response.Status = "4 Bad Request";
               response.Body = null;
             }
-            Console.WriteLine(123);
-            Console.WriteLine(extractedId);
-            Console.WriteLine(request.Path);
             if (request.Path != "" && extractedId == "" && request.Method == "update")
             {
               response.Status = "4 Bad Request";
               response.Body = null;
+            }
+            if (request.Path != "" && extractedId == "" && request.Method == "delete")
+            {
+              response.Status = "4 Bad Request";
+              response.Body = null;
+            }
+            if (request.Path == "/api/categories" && extractedId == "" && request.Method == "read")
+            {
+              response.Status = "1 Ok";
+              var categories = new List<object>
+            {
+                new {cid = 1, name = "Beverages"},
+                new {cid = 2, name = "Condiments"},
+                new {cid = 3, name = "Confections"}
+            };
+              response.Body = categories.ToJson();
             }
           }
           else
@@ -259,6 +273,10 @@ namespace Server
         }
       }
       return false;
+    }
+    public static string ToJson(this object data)
+    {
+      return JsonSerializer.Serialize(data, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
     }
   }
 }
