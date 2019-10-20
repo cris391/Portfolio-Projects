@@ -55,7 +55,7 @@ namespace Tests
       // Console.WriteLine(response.ToJson());
       Console.WriteLine(123);
       Console.WriteLine(response.Status);
-      Assert.True(response.Status.ToLower().Contains("missing method"));
+      Assert.Contains("missing method", response.Status.ToLower());
     }
 
     [Fact]
@@ -114,7 +114,7 @@ namespace Tests
 
       var response = client.ReadResponse();
 
-      Assert.True(response.Status.ToLower().Contains("missing date"));
+      Assert.Contains("missing date", response.Status.ToLower());
     }
 
     [Fact]
@@ -160,7 +160,7 @@ namespace Tests
     }
 
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_RequestUpdateWithoutJsonBody_IllegalBodyError()
     {
       var client = Connect();
@@ -176,13 +176,14 @@ namespace Tests
       client.SendRequest(request.ToJson());
       var response = client.ReadResponse();
 
-
+      Console.WriteLine(123);
+      Console.WriteLine(response.Status);
       Assert.Contains("illegal body", response.Status.ToLower());
 
     }
 
     /* Echo Test */
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Echo_RequestWithBody_ReturnsBody()
     {
       var client = Connect();
@@ -209,7 +210,7 @@ namespace Tests
 
     /* Path tests  */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_RequestWithInvalidpath_StatusBadRequest()
     {
       var client = Connect();
@@ -229,7 +230,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson().ToLower(), response.ToJson().ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_RequestWithInvalidpathId_StatusBadRequest()
     {
       var client = Connect();
@@ -249,7 +250,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson().ToLower(), response.ToJson().ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_CreateWithPathId_StatusBadRequest()
     {
       var client = Connect();
@@ -270,7 +271,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson().ToLower(), response.ToJson().ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_UpdateWithOutPathId_StatusBadRequest()
     {
       var client = Connect();

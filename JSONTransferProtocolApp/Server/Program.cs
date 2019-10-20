@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace Server
@@ -29,6 +30,10 @@ namespace Server
     public string Path { get; set; }
     public string Date { get; set; }
     public string Body { get; set; }
+    public override string ToString()
+    {
+      return "Method: " + Method + ", Path: " + Path + ", Date: " + Date + ", Body: " + Body;
+    }
   }
 
   class Program
@@ -85,32 +90,90 @@ namespace Server
         // while ((receiveBufferCount = stream.Read(buffer, 0, buffer.Length)) != 0)
         // {
         // var msg = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-        Console.WriteLine(123);
         // Console.WriteLine(msg);
         var request = client.ReadRequest();
         if (request.Method == null)
         {
           response.Status = "missing method";
+          // goto Finish;
         }
-        else if (!(Util.ArrayContains(Method.methods, request.Method)))
+        if (request.Path == null)
         {
-          response.Status = "illegal method";
+          response.Status += "missing resource";
         }
-        else if (request.Path == null)
+        if (request.Body == null)
         {
-          response.Status = "missing resource";
+          response.Status += ", missing body";
         }
         if (request.Date == null)
         {
           response.Status += ", missing date";
+          goto Finish;
+        }
+
+        if (!(Util.ArrayContains(Method.methods, request.Method)))
+        {
+          response.Status += "illegal method";
+          goto Finish;
         }
         // check if date in correct format
-        if(request.Date != null && request.Date.GetType() != typeof(System.Int64)){
+        if (request.Date != null && request.Date.GetType() != typeof(System.Int64))
+        {
           response.Status += ", illegal date";
+          goto Finish;
         }
-        if(request.Body == null){
-          response.Status += ", missing body";
+
+      Finish:
+        //invalid json object in body
+        if (request.Body != null)
+        {
+          try
+          {
+            var categoryFromJson = JsonSerializer.Deserialize<Request>(request.Body);
+          }
+          catch (System.Exception e)
+          {
+            Console.WriteLine(e);
+
+            response.Status += ", illegal body";
+          }
+          response.Body = "Hello World";
+          goto End;
         }
+
+      End:
+        if (request.Path != null && request.Path.Contains("/api"))
+        {
+          if (request.Path.Contains("/api/categories"))
+          {
+            var extractedId = Regex.Match(request.Path, @"\d+$").Value;
+
+            if (extractedId == "")
+            {
+              response.Status = "4 Bad Request";
+            }
+            if (request.Path != "" && extractedId != "" && request.Method == "create")
+            {
+              response.Status = "4 Bad Request";
+              response.Body = null;
+            }
+            Console.WriteLine(123);
+            Console.WriteLine(extractedId);
+            Console.WriteLine(request.Path);
+            if (request.Path != "" && extractedId == "" && request.Method == "update")
+            {
+              response.Status = "4 Bad Request";
+              response.Body = null;
+            }
+          }
+          else
+          {
+            response.Status = "4 Bad Request";
+          }
+        }
+
+        Console.WriteLine(request.ToString());
+        Console.WriteLine("Status: ", response.Status);
         Console.WriteLine(response.Status);
 
         // implement some kind of cleanup if client sends close message(server sid)
