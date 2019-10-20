@@ -88,7 +88,6 @@ namespace Server
         Console.WriteLine(123);
         // Console.WriteLine(msg);
         var request = client.ReadRequest();
-        Console.WriteLine(request.Method);
         if (request.Method == null)
         {
           response.Status = "missing method";
@@ -101,6 +100,18 @@ namespace Server
         {
           response.Status = "missing resource";
         }
+        if (request.Date == null)
+        {
+          response.Status += ", missing date";
+        }
+        // check if date in correct format
+        if(request.Date != null && request.Date.GetType() != typeof(System.Int64)){
+          response.Status += ", illegal date";
+        }
+        if(request.Body == null){
+          response.Status += ", missing body";
+        }
+        Console.WriteLine(response.Status);
 
         // implement some kind of cleanup if client sends close message(server sid)
         // if (msg == "exit2") client.Close();
