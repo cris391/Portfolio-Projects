@@ -53,11 +53,12 @@ namespace Tests
 
       var response = client.ReadResponse();
       // Console.WriteLine(response.ToJson());
-      // Console.WriteLine(response.Status);
+      Console.WriteLine(123);
+      Console.WriteLine(response.Status);
       Assert.True(response.Status.ToLower().Contains("missing method"));
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_RequestWithUnknownMethod_IllegalMethodError()
     {
       var client = Connect();
@@ -71,8 +72,11 @@ namespace Tests
       };
 
       client.SendRequest(request.ToJson());
-      var response = client.ReadResponse();
 
+      var response = client.ReadResponse();
+      Console.WriteLine(123);
+      Console.WriteLine(request.ToJson());
+      Console.WriteLine(response.Status);
       Assert.Contains("illegal method", response.Status.ToLower());
     }
 
@@ -636,6 +640,8 @@ namespace Tests
           // Console.WriteLine("######");
           memStream.Write(resp, 0, bytesread);
           var responseData2 = Encoding.UTF8.GetString(memStream.ToArray());
+          Console.WriteLine(21);
+          Console.WriteLine(responseData2);
         } while (bytesread == 2048);
 
         var responseData = Encoding.UTF8.GetString(memStream.ToArray());
