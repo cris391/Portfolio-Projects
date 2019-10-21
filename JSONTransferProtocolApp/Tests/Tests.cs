@@ -55,7 +55,7 @@ namespace Tests
       // Console.WriteLine(response.ToJson());
       Console.WriteLine(123);
       Console.WriteLine(response.Status);
-      Assert.True(response.Status.ToLower().Contains("missing method"));
+      Assert.Contains("missing method", response.Status.ToLower());
     }
 
     [Fact]
@@ -105,7 +105,7 @@ namespace Tests
 
     /* Date Tests    */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_RequestWithoutDate_MissingDateError()
     {
       var client = Connect();
@@ -114,10 +114,10 @@ namespace Tests
 
       var response = client.ReadResponse();
 
-      Assert.True(response.Status.ToLower().Contains("missing date"));
+      Assert.Contains("missing date", response.Status.ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_RequestWhereDateIsNotUnixTime_IllegalDateError()
     {
       var client = Connect();
@@ -138,7 +138,7 @@ namespace Tests
 
     /* Body Tests    */
 
-    [Theory(Skip = "justbecause")]
+    [Theory]
     [InlineData("create")]
     [InlineData("update")]
     [InlineData("echo")]
@@ -160,7 +160,7 @@ namespace Tests
     }
 
 
-    [Fact(Skip = "justbecause")]
+[Fact]
     public void Constraint_RequestUpdateWithoutJsonBody_IllegalBodyError()
     {
       var client = Connect();
@@ -176,13 +176,14 @@ namespace Tests
       client.SendRequest(request.ToJson());
       var response = client.ReadResponse();
 
-
+      Console.WriteLine(123);
+      Console.WriteLine(response.Status);
       Assert.Contains("illegal body", response.Status.ToLower());
 
     }
 
     /* Echo Test */
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Echo_RequestWithBody_ReturnsBody()
     {
       var client = Connect();
@@ -209,7 +210,7 @@ namespace Tests
 
     /* Path tests  */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_RequestWithInvalidpath_StatusBadRequest()
     {
       var client = Connect();
@@ -229,7 +230,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson().ToLower(), response.ToJson().ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_RequestWithInvalidpathId_StatusBadRequest()
     {
       var client = Connect();
@@ -249,7 +250,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson().ToLower(), response.ToJson().ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_CreateWithPathId_StatusBadRequest()
     {
       var client = Connect();
@@ -270,7 +271,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson().ToLower(), response.ToJson().ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_UpdateWithOutPathId_StatusBadRequest()
     {
       var client = Connect();
@@ -291,7 +292,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson().ToLower(), response.ToJson().ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Constraint_DeleteWithOutPathId_StatusBadRequest()
     {
       var client = Connect();
@@ -315,7 +316,7 @@ namespace Tests
 
     /* Read tests */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_ReadCategories_StatusOkAndListOfCategoriesInBody()
     {
       var client = Connect();
@@ -346,7 +347,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson(), response.ToJson());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_ReadCategoryWithValidId_StatusOkAndCategoryInBody()
     {
       var client = Connect();
@@ -370,7 +371,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson(), response.ToJson());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_ReadCategoryWithInvalidId_StatusNotFound()
     {
       var client = Connect();
@@ -391,7 +392,7 @@ namespace Tests
 
     /* Update tests  */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_UpdateCategoryWithValidIdAndBody_StatusUpdated()
     {
       var client = Connect();
@@ -411,7 +412,6 @@ namespace Tests
       Assert.Contains("3 updated", response.Status.ToLower());
 
       // reset data
-
       client = Connect();
 
       var resetRequest = new
@@ -426,7 +426,7 @@ namespace Tests
       client.ReadResponse();
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_UpdateCategotyValidIdAndBody_ChangedCategoryName()
     {
       var client = Connect();
@@ -471,7 +471,7 @@ namespace Tests
       client.ReadResponse();
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_UpdateCategotyInvalidId_NotFound()
     {
       var client = Connect();
@@ -493,7 +493,7 @@ namespace Tests
 
     /* Create Tests  */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_CreateCategoryWithValidBodyArgument_CreateNewCategory()
     {
       var client = Connect();
@@ -531,7 +531,7 @@ namespace Tests
 
     /* Delete Tests  */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_DeleteCategoryWithValidId_RemoveCategory()
     {
       var client = Connect();
@@ -547,6 +547,8 @@ namespace Tests
       client.SendRequest(request.ToJson());
       var response = client.ReadResponse();
 
+      // Console.WriteLine(response.Body.FromJson<Category>().Id);
+
       client = Connect();
       var verifyRequest = new
       {
@@ -556,12 +558,13 @@ namespace Tests
       };
 
       client.SendRequest(verifyRequest.ToJson());
+      Console.WriteLine(123);
       response = client.ReadResponse();
-
+      Console.WriteLine(verifyRequest);
       Assert.Contains("1 ok", response.Status.ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_DeleteCategoryWithInvalidId_StatusNotFound()
     {
       var client = Connect();
