@@ -160,7 +160,7 @@ namespace Tests
     }
 
 
-    [Fact]
+[Fact]
     public void Constraint_RequestUpdateWithoutJsonBody_IllegalBodyError()
     {
       var client = Connect();
@@ -347,7 +347,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson(), response.ToJson());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_ReadCategoryWithValidId_StatusOkAndCategoryInBody()
     {
       var client = Connect();
@@ -371,7 +371,7 @@ namespace Tests
       Assert.Equal(expectedResponse.ToJson(), response.ToJson());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_ReadCategoryWithInvalidId_StatusNotFound()
     {
       var client = Connect();
@@ -392,7 +392,7 @@ namespace Tests
 
     /* Update tests  */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_UpdateCategoryWithValidIdAndBody_StatusUpdated()
     {
       var client = Connect();
@@ -412,7 +412,6 @@ namespace Tests
       Assert.Contains("3 updated", response.Status.ToLower());
 
       // reset data
-
       client = Connect();
 
       var resetRequest = new
@@ -427,7 +426,7 @@ namespace Tests
       client.ReadResponse();
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_UpdateCategotyValidIdAndBody_ChangedCategoryName()
     {
       var client = Connect();
@@ -472,7 +471,7 @@ namespace Tests
       client.ReadResponse();
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_UpdateCategotyInvalidId_NotFound()
     {
       var client = Connect();
@@ -494,7 +493,7 @@ namespace Tests
 
     /* Create Tests  */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_CreateCategoryWithValidBodyArgument_CreateNewCategory()
     {
       var client = Connect();
@@ -532,7 +531,7 @@ namespace Tests
 
     /* Delete Tests  */
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_DeleteCategoryWithValidId_RemoveCategory()
     {
       var client = Connect();
@@ -548,6 +547,8 @@ namespace Tests
       client.SendRequest(request.ToJson());
       var response = client.ReadResponse();
 
+      // Console.WriteLine(response.Body.FromJson<Category>().Id);
+
       client = Connect();
       var verifyRequest = new
       {
@@ -557,12 +558,13 @@ namespace Tests
       };
 
       client.SendRequest(verifyRequest.ToJson());
+      Console.WriteLine(123);
       response = client.ReadResponse();
-
+      Console.WriteLine(verifyRequest);
       Assert.Contains("1 ok", response.Status.ToLower());
     }
 
-    [Fact(Skip = "justbecause")]
+    [Fact]
     public void Request_DeleteCategoryWithInvalidId_StatusNotFound()
     {
       var client = Connect();

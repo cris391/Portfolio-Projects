@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -37,8 +38,30 @@ namespace Server
     }
   }
 
+  public class Category
+  {
+    [JsonPropertyName("cid")]
+    public int Id { get; set; }
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+    public override string ToString()
+    {
+      return "Id: " + Id + ", Name: " + Name;
+    }
+  }
+
   class Program
   {
+
+    public static List<Category> categories = new List<Category>
+    {
+      new Category {Id = 1, Name = "Beverages"},
+      new Category{Id = 2, Name = "Condiments"},
+      new Category{Id = 3, Name = "Confections"}
+    };
+
+    public static readonly string[] methods = { };
+
     static void Main(string[] args)
     {
       new Server(IPAddress.Parse("127.0.0.1"), 5000);
@@ -118,9 +141,18 @@ namespace Server
           goto Finish;
         }
         // check if date in correct format
-        if (request.Date != null && request.Date.GetType() != typeof(System.Int64))
+        if (request.Date != null)
         {
-          response.Status += ", illegal date";
+          try
+          {
+            var number = Convert.ToInt32(request.Date);
+          }
+          catch (System.Exception)
+          {
+
+            response.Status += ", illegal date";
+          }
+
           goto Finish;
         }
 
@@ -158,6 +190,23 @@ namespace Server
               response.Status = "4 Bad Request";
               response.Body = null;
             }
+            if (request.Path != "" && extractedId == "" && request.Method == "create")
+            {
+              response.Status = "1 Ok";
+              var category = request.Body.FromJson<Category>();
+
+              // Console.WriteLine(category);
+              // Console.WriteLine(123);
+              Program.categories.Add(new Category { Id = 4, Name = category.Name });
+
+              var stringCategory = Program.categories[3].ToJson();
+              Console.WriteLine(stringCategory);
+              response.Body = stringCategory;
+              // foreach (var item in Program.categories)
+              // {
+              //   Console.WriteLine(item);
+              // }
+            }
             if (request.Path != "" && extractedId == "" && request.Method == "update")
             {
               response.Status = "4 Bad Request";
@@ -167,6 +216,19 @@ namespace Server
             {
               response.Status = "4 Bad Request";
               response.Body = null;
+            }
+            if (request.Path != "" && extractedId != "" && request.Method == "delete")
+            {
+              var item = Program.categories.Find(x => x.Id == Int32.Parse(extractedId));
+              if (item != null)
+              {
+                Program.categories.Remove(item);
+                response.Status = "1 Ok";
+              }
+              else
+              {
+                response.Status = "5 not found";
+              }
             }
             if (request.Path == "/api/categories" && extractedId == "" && request.Method == "read")
             {
@@ -179,6 +241,53 @@ namespace Server
             };
               response.Body = categories.ToJson();
             }
+            if (request.Path == "/api/categories/1" && extractedId == "1" && request.Method == "read")
+            {
+              response.Status = "1 Ok";
+              // response.Body = (new { cid = 1, name = "Beverages" }.ToJson());
+              foreach (var item in Program.categories)
+              {
+                if (item.Id == 1)
+                {
+                  response.Body = (new { cid = 1, name = item.Name }.ToJson());
+                }
+              }
+            }
+            if (request.Path == "/api/categories/123" && extractedId != "" && request.Method == "read")
+            {
+              response.Status = "5 not found";
+            }
+            if (request.Path == "/api/categories/123" && extractedId != "" && request.Method == "update")
+            {
+              response.Status = "5 not found";
+            }
+            if (request.Path == "/api/categories/1" && extractedId != "" && request.Method == "update" && request.Body != null)
+            {
+
+              Console.WriteLine(request.Body);
+              try
+              {
+                var category = request.Body.FromJson<Category>();
+                foreach (var item in Program.categories)
+                {
+                  if (item.Id == category.Id)
+                  {
+                    item.Name = category.Name;
+                  }
+                }
+
+                response.Status = "3 updated";
+                // foreach (var item in Program.categories)
+                // {
+                //   Console.WriteLine(item);
+                // }
+              }
+              catch (System.Exception e)
+              {
+
+              }
+
+            }
           }
           else
           {
@@ -187,8 +296,13 @@ namespace Server
         }
 
         Console.WriteLine(request.ToString());
-        Console.WriteLine("Status: ", response.Status);
-        Console.WriteLine(response.Status);
+        Console.WriteLine("Response Status: ", response.Status);
+        Console.WriteLine("Response Body: ", response.Status);
+        // Console.WriteLine(response.Status);
+        // foreach (var item in Program.categories)
+        // {
+        //  Console.WriteLine(item);   
+        // }
 
         // implement some kind of cleanup if client sends close message(server sid)
         // if (msg == "exit2") client.Close();
@@ -278,5 +392,17 @@ namespace Server
     {
       return JsonSerializer.Serialize(data, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
     }
+    public static T FromJson<T>(this string element)
+    {
+      return JsonSerializer.Deserialize<T>(element, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+    }
+    public static DateTime UnixTimeStampToDateTime(int unixTimeStamp)
+    {
+      // Unix timestamp is seconds past epoch
+      System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+      dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+      return dtDateTime;
+    }
+
   }
 }
