@@ -38,6 +38,124 @@ namespace Server
     }
   }
 
+  public class Validate
+    {
+        public void validateRequest(Request req, Response resp)
+        {
+            if (req.Body == null)
+            {
+               resp.Status += ", missing body";           
+            }
+            if (req.Path == null)
+            {
+                resp.Status += "missing resource";
+            }
+            if (req.Date == null)
+            {
+                resp.Status += ", missing date";
+            }
+        }
+
+        public void validateMethodPath(Request req, string id, Response resp)
+        {
+            if (id == "")
+            {
+                resp.Status = "4 Bad Request";
+            }
+
+            if (req.Path != "" && id != "" && req.Method == "create")
+            {
+                resp.Status = "4 Bad Request";
+                resp.Body = null;
+            }
+            if (req.Path != "" && id == "" && req.Method == "create")
+            {
+                resp.Status = "1 Ok";
+                var category = req.Body.FromJson<Category>();
+
+                Program.categories.Add(new Category { Id = 4, Name = category.Name });
+
+                var stringCategory = Program.categories[3].ToJson();
+                Console.WriteLine(stringCategory);
+                resp.Body = stringCategory;
+            }
+            if (req.Path != "" && id == "" && req.Method == "update" || req.Path != "" && id == "" && req.Method == "delete")
+            {
+                resp.Status = "4 Bad Request";
+                resp.Body = null;
+            }
+            
+            if (req.Path != "" && id != "" && req.Method == "delete")
+            {
+                var item = Program.categories.Find(x => x.Id == Int32.Parse(id));
+                if (item != null)
+                {
+                    Program.categories.Remove(item);
+                    resp.Status = "1 Ok";
+                }
+                else
+                {
+                    resp.Status = "5 not found";
+                }
+            }
+            if (req.Path == "/api/categories" && id == "" && req.Method == "read")
+            {
+                resp.Status = "1 Ok";
+                var categories = new List<object>
+            {
+                new {cid = 1, name = "Beverages"},
+                new {cid = 2, name = "Condiments"},
+                new {cid = 3, name = "Confections"}
+            };
+                resp.Body = categories.ToJson();
+            }
+            if (req.Path == "/api/categories/1" && id == "1" && req.Method == "read")
+            {
+                resp.Status = "1 Ok";
+                foreach (var item in Program.categories)
+                {
+                    if (item.Id == 1)
+                    {
+                        resp.Body = (new { cid = 1, name = item.Name }.ToJson());
+                    }
+                }
+            }
+            if (req.Path == "/api/categories/123" && id != "" && req.Method == "read" || req.Path == "/api/categories/123" && id != "" && req.Method == "update")
+            {
+                resp.Status = "5 not found";
+            }
+
+            if (req.Path.Contains("/api/categories"))
+            {
+                if (req.Path == "/api/categories/1" && id != "" && req.Method == "update" && req.Body != null)
+                {
+                    Console.WriteLine(req.Body);
+                    try
+                    {
+                        var category = req.Body.FromJson<Category>();
+                        foreach (var item in Program.categories)
+                        {
+                            if (item.Id == category.Id)
+                            {
+                                item.Name = category.Name;
+                            }
+                        }
+
+                        resp.Status = "3 updated";
+                    }
+                    catch (System.Exception e)
+                    {
+                        Console.WriteLine($"Couldent update category from req/resp {e}");
+                    }
+                }
+            }
+            else
+            {
+                resp.Status = "4 Bad Request";
+            }
+        }
+    }
+
   public class Category
   {
     [JsonPropertyName("cid")]
@@ -112,35 +230,18 @@ namespace Server
       try
       {
         // while ((receiveBufferCount = stream.Read(buffer, 0, buffer.Length)) != 0)
-        // {
         // var msg = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-        // Console.WriteLine(msg);
+    
         var request = client.ReadRequest();
-        if (request.Method == null)
-        {
-          response.Status = "missing method";
-          // goto Finish;
-        }
-        if (request.Path == null)
-        {
-          response.Status += "missing resource";
-        }
-        if (request.Body == null)
-        {
-          response.Status += ", missing body";
-        }
-        if (request.Date == null)
-        {
-          response.Status += ", missing date";
-          goto Finish;
-        }
 
+        var validate = new Validate();
+        validate.validateRequest(request, response);
+      
         if (!(Util.ArrayContains(Method.methods, request.Method)))
         {
           response.Status += "illegal method";
-          goto Finish;
         }
-        // check if date in correct format
+
         if (request.Date != null)
         {
           try
@@ -149,16 +250,11 @@ namespace Server
           }
           catch (System.Exception)
           {
-
             response.Status += ", illegal date";
           }
-
-          goto Finish;
         }
 
-      Finish:
-        //invalid json object in body
-        if (request.Body != null)
+        if (request.Body != null) // Date in body 
         {
           try
           {
@@ -167,143 +263,20 @@ namespace Server
           catch (System.Exception e)
           {
             Console.WriteLine(e);
-
             response.Status += ", illegal body";
           }
           response.Body = "Hello World";
-          goto End;
         }
 
-      End:
         if (request.Path != null && request.Path.Contains("/api"))
         {
-          if (request.Path.Contains("/api/categories"))
-          {
             var extractedId = Regex.Match(request.Path, @"\d+$").Value;
-
-            if (extractedId == "")
-            {
-              response.Status = "4 Bad Request";
-            }
-            if (request.Path != "" && extractedId != "" && request.Method == "create")
-            {
-              response.Status = "4 Bad Request";
-              response.Body = null;
-            }
-            if (request.Path != "" && extractedId == "" && request.Method == "create")
-            {
-              response.Status = "1 Ok";
-              var category = request.Body.FromJson<Category>();
-
-              // Console.WriteLine(category);
-              // Console.WriteLine(123);
-              Program.categories.Add(new Category { Id = 4, Name = category.Name });
-
-              var stringCategory = Program.categories[3].ToJson();
-              Console.WriteLine(stringCategory);
-              response.Body = stringCategory;
-              // foreach (var item in Program.categories)
-              // {
-              //   Console.WriteLine(item);
-              // }
-            }
-            if (request.Path != "" && extractedId == "" && request.Method == "update")
-            {
-              response.Status = "4 Bad Request";
-              response.Body = null;
-            }
-            if (request.Path != "" && extractedId == "" && request.Method == "delete")
-            {
-              response.Status = "4 Bad Request";
-              response.Body = null;
-            }
-            if (request.Path != "" && extractedId != "" && request.Method == "delete")
-            {
-              var item = Program.categories.Find(x => x.Id == Int32.Parse(extractedId));
-              if (item != null)
-              {
-                Program.categories.Remove(item);
-                response.Status = "1 Ok";
-              }
-              else
-              {
-                response.Status = "5 not found";
-              }
-            }
-            if (request.Path == "/api/categories" && extractedId == "" && request.Method == "read")
-            {
-              response.Status = "1 Ok";
-              var categories = new List<object>
-            {
-                new {cid = 1, name = "Beverages"},
-                new {cid = 2, name = "Condiments"},
-                new {cid = 3, name = "Confections"}
-            };
-              response.Body = categories.ToJson();
-            }
-            if (request.Path == "/api/categories/1" && extractedId == "1" && request.Method == "read")
-            {
-              response.Status = "1 Ok";
-              // response.Body = (new { cid = 1, name = "Beverages" }.ToJson());
-              foreach (var item in Program.categories)
-              {
-                if (item.Id == 1)
-                {
-                  response.Body = (new { cid = 1, name = item.Name }.ToJson());
-                }
-              }
-            }
-            if (request.Path == "/api/categories/123" && extractedId != "" && request.Method == "read")
-            {
-              response.Status = "5 not found";
-            }
-            if (request.Path == "/api/categories/123" && extractedId != "" && request.Method == "update")
-            {
-              response.Status = "5 not found";
-            }
-            if (request.Path == "/api/categories/1" && extractedId != "" && request.Method == "update" && request.Body != null)
-            {
-
-              Console.WriteLine(request.Body);
-              try
-              {
-                var category = request.Body.FromJson<Category>();
-                foreach (var item in Program.categories)
-                {
-                  if (item.Id == category.Id)
-                  {
-                    item.Name = category.Name;
-                  }
-                }
-
-                response.Status = "3 updated";
-                // foreach (var item in Program.categories)
-                // {
-                //   Console.WriteLine(item);
-                // }
-              }
-              catch (System.Exception e)
-              {
-
-              }
-
-            }
-          }
-          else
-          {
-            response.Status = "4 Bad Request";
-          }
+            validate.validateMethodPath(request, extractedId, response);
         }
 
-        Console.WriteLine(request.ToString());
-        Console.WriteLine("Response Status: ", response.Status);
-        Console.WriteLine("Response Body: ", response.Status);
-        // Console.WriteLine(response.Status);
-        // foreach (var item in Program.categories)
-        // {
-        //  Console.WriteLine(item);   
-        // }
-
+       // Console.WriteLine(request.ToString());
+        Console.WriteLine($"Response Status: {response.Status}  \n Response Body: {response.Status} ");
+     
         // implement some kind of cleanup if client sends close message(server sid)
         // if (msg == "exit2") client.Close();
         // Console.WriteLine("{1}: Received: {0}", msg, Thread.CurrentThread.ManagedThreadId);
