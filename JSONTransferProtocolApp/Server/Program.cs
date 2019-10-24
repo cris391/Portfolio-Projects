@@ -22,11 +22,11 @@ namespace Server
     public static readonly string[] methods = { Read, Create, Update, Delete };
   }
   public class Response
-  {
+  {           
     public string Status { get; set; }
     public string Body { get; set; }
   }
-  public class Request
+  public class Request 
   {
     public string Method { get; set; }
     public string Path { get; set; }
@@ -109,12 +109,12 @@ namespace Server
 
       var buffer = new byte[client.ReceiveBufferSize];
       int receiveBufferCount;
-      try
+      try       
       {
         // while ((receiveBufferCount = stream.Read(buffer, 0, buffer.Length)) != 0)
         // {
         // var msg = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-        // Console.WriteLine(msg);
+        // Console.WriteLine(msg);       
         var request = client.ReadRequest();
         if (request.Method == null)
         {
@@ -132,13 +132,13 @@ namespace Server
         if (request.Date == null)
         {
           response.Status += ", missing date";
-          goto Finish;
+          // goto Finish;
         }
 
         if (!(Util.ArrayContains(Method.methods, request.Method)))
         {
           response.Status += "illegal method";
-          goto Finish;
+          // goto Finish;
         }
         // check if date in correct format
         if (request.Date != null)
@@ -147,16 +147,16 @@ namespace Server
           {
             var number = Convert.ToInt32(request.Date);
           }
-          catch (System.Exception)
-          {
+          catch (System.Exception)    
+          {         
 
             response.Status += ", illegal date";
           }
-
-          goto Finish;
+ 
+          // goto Finish;
         }
 
-      Finish:
+      // Finish:
         //invalid json object in body
         if (request.Body != null)
         {
@@ -171,10 +171,10 @@ namespace Server
             response.Status += ", illegal body";
           }
           response.Body = "Hello World";
-          goto End;
+          // goto End;
         }
 
-      End:
+      // End:
         if (request.Path != null && request.Path.Contains("/api"))
         {
           if (request.Path.Contains("/api/categories"))
