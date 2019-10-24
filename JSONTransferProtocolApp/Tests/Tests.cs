@@ -52,9 +52,6 @@ namespace Tests
       client.SendRequest("{}");
 
       var response = client.ReadResponse();
-      // Console.WriteLine(response.ToJson());
-      Console.WriteLine(123);
-      Console.WriteLine(response.Status);
       Assert.Contains("missing method", response.Status.ToLower());
     }
 
