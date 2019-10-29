@@ -74,6 +74,23 @@ namespace DatabaseService
       }
       return true;
     }
+    public bool PutCategory(int id, string name, string description)
+    {
+      try
+      {
+        using var db = new NorthwindContext();
+        var category = GetCategory(id);
+        category.Name = name;
+        category.Description = description;
+        db.Update(category); 
+        db.SaveChanges();
+      }
+      catch (System.Exception e)
+      {
+        return false;
+      }
+      return true;
+    }
 
     public Product GetProduct(int id)
     {

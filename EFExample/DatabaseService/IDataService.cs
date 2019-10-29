@@ -18,6 +18,7 @@ namespace DatabaseService
     List<Product> GetProductByCategory(int id);
     List<Product> GetProductByName(string name);
     bool UpdateCategory(int id, string name, string description);
+    bool PutCategory(int id, string name, string description);
   }
   // public interface IDataService
   // {
