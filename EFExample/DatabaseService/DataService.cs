@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DatabaseService
 {
 
-  public class DataService
+  public class DataService: IDataService
   {
     public List<Category> GetCategories()
     {
@@ -31,6 +31,15 @@ namespace DatabaseService
 
       return GetCategory(category.Id);
     }
+    // public Category CreateCategory(Category category)
+    // {
+    //   using var db = new NorthwindContext();
+    //   var nextId = db.Categories.Max(x => x.Id) + 1;
+    //   db.Categories.Add(category);
+    //   db.SaveChanges();
+
+    //   return GetCategory(category.Id);
+    // }
 
     public bool DeleteCategory(int id)
     {
