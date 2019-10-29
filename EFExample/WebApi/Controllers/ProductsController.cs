@@ -1,4 +1,4 @@
-﻿using DatabaseService;
+using DatabaseService;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 namespace WebApi.Controllers
 {
   [ApiController]
-  [Route("api/categories")]
-  public class CategoriesController : ControllerBase
+  [Route("api/products")]
+  public class ProductsController : ControllerBase
   {
     IDataService _dataService;
-    public CategoriesController(IDataService dataService)
+    public ProductsController(IDataService dataService)
     {
       _dataService = dataService;
     }
@@ -24,14 +24,14 @@ namespace WebApi.Controllers
       return _dataService.GetCategories();
     }
 
-    [HttpGet("{categoryId}")]
-    public ActionResult<Category> GetCategory(int categoryId)
+    [HttpGet("{productId}")]
+    public ActionResult<Category> GetProduct(int productId)
     {
-      var category = _dataService.GetCategory(categoryId);
+      var product = _dataService.GetProduct(productId);
 
-      if (category == null) return NotFound();
+      if (product == null) return NotFound();
 
-      return Ok(category);
+      return Ok(product);
     }
 
     [HttpPost]
