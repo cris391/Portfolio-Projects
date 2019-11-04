@@ -7,13 +7,23 @@ using Microsoft.EntityFrameworkCore;
 namespace DatabaseService
 {
 
-  public class DataService: IDataService
+  public class DataService : IDataService
   {
-    public List<Category> GetCategories()
+    // public IList<Category> GetCategories()
+    public IList<Category> GetCategories(PagingAttributes pagingAttributes)
     {
       using var db = new NorthwindContext();
-      return db.Categories.ToList();
+      return db.Categories
+                .Skip(pagingAttributes.Page * pagingAttributes.PageSize)
+                .Take(pagingAttributes.PageSize)
+                .ToList();
     }
+    public int NumberOfCategories()
+    {
+      using var db = new NorthwindContext();
+      return db.Categories.Count();
+    }
+
 
     public Category GetCategory(int id)
     {
@@ -21,25 +31,20 @@ namespace DatabaseService
       return db.Categories.Find(id);
     }
 
-    public Category CreateCategory(string name, string description)
+    public Category CreateCategory(Category category)
     {
-      using var db = new NorthwindContext();
-      var nextId = db.Categories.Max(x => x.Id) + 1;
-      var category = new Category { Id = nextId, Name = name, Description = description };
-      db.Categories.Add(category);
-      db.SaveChanges();
-
-      return GetCategory(category.Id);
+      using var DB = new NorthwindContext();
+      var nextId = DB.Categories.Max(x => x.Id) + 1;
+      var newCategory = new Category
+      {
+        Id = nextId,
+        Name = category.Name,
+        Description = category.Description
+      };
+      DB.Categories.Add(newCategory);
+      DB.SaveChanges();
+      return GetCategory(newCategory.Id);
     }
-    // public Category CreateCategory(Category category)
-    // {
-    //   using var db = new NorthwindContext();
-    //   var nextId = db.Categories.Max(x => x.Id) + 1;
-    //   db.Categories.Add(category);
-    //   db.SaveChanges();
-
-    //   return GetCategory(category.Id);
-    // }
 
     public bool DeleteCategory(int id)
     {
@@ -82,7 +87,7 @@ namespace DatabaseService
         var category = GetCategory(id);
         category.Name = name;
         category.Description = description;
-        db.Update(category); 
+        db.Update(category);
         db.SaveChanges();
       }
       catch (System.Exception e)

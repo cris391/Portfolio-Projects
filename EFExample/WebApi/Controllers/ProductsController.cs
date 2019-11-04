@@ -18,11 +18,11 @@ namespace WebApi.Controllers
       _dataService = dataService;
     }
 
-    [HttpGet]
-    public IList<Category> GetCategories()
-    {
-      return _dataService.GetCategories();
-    }
+    // [HttpGet]
+    // public IList<Category> GetCategories()
+    // {
+    //   return _dataService.GetCategories();
+    // }
 
     [HttpGet("{productId}")]
     public ActionResult<Category> GetProduct(int productId)
