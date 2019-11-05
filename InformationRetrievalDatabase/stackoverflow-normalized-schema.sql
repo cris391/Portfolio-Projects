@@ -13,10 +13,10 @@ CREATE TABLE posts(
 postid int, creationdate timestamp, score int, body text);
 
 CREATE TABLE questions(
-questionid int, closeddate timestamp, title text, acceptedanswerid int);
+questionid int, closeddate timestamp, title text, acceptedanswerid int, postid int4);
 
 CREATE TABLE answers(
-answerid int4, parentid int4);
+answerid int4, parentid int4, postid int4);
 
 CREATE TABLE comments(
 commentid int, userid int, postid int, commentscore int, commenttext text, commentcreatedate timestamp);
@@ -44,11 +44,11 @@ postid, creationdate, score, body)
 select distinct id, creationdate, score, body from posts_universal;
 
 insert into questions(
-questionid, closeddate, title, acceptedanswerid)
-select distinct id, closeddate, title, acceptedanswerid from posts_universal where posttypeid = 1;
+questionid, closeddate, title, acceptedanswerid, postid)
+select distinct id, closeddate, title, acceptedanswerid, id from posts_universal where posttypeid = 1;
 
-insert into answers(answerid, parentid)
-select distinct id answerid, parentid from posts_universal where posttypeid = 2;
+insert into answers(answerid, parentid, postid)
+select distinct id answerid, parentid, id from posts_universal where posttypeid = 2;
 
 insert into comments(commentid, userid, postid, commentscore, commenttext, commentcreatedate) 
 select distinct commentid, authorid, postid, commentscore, commenttext, commentcreatedate from comments_universal;
