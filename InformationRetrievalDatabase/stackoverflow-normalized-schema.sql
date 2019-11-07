@@ -16,7 +16,7 @@ CREATE TABLE questions(
 questionid int, closeddate timestamp, title text, acceptedanswerid int, postid int4);
 
 CREATE TABLE answers(
-answerid int4, parentid int4);
+answerid int4, postid int4);
 
 CREATE TABLE comments(
 commentid int, userid int, postid int, commentscore int, commenttext text, commentcreatedate timestamp);
@@ -47,7 +47,7 @@ insert into questions(
 questionid, closeddate, title, acceptedanswerid, postid)
 select distinct id, closeddate, title, acceptedanswerid, id from posts_universal where posttypeid = 1;
 
-insert into answers(answerid, parentid)
+insert into answers(answerid, postid)
 select distinct id answerid, parentid from posts_universal where posttypeid = 2;
 
 insert into comments(commentid, userid, postid, commentscore, commenttext, commentcreatedate) 
@@ -68,6 +68,6 @@ from posts p
 join questions q on q.questionid = p.postid;
 
 drop view if exists a_view;
-create materialized view a_view as select a.answerid, p.creationdate, p.score, p.body, a.parentid
+create materialized view a_view as select a.answerid, p.creationdate, p.score, p.body, a.postid
 from posts p
-join answers a on a.answerid = p.postid;
+join answers a on a.postid = p.postid;
