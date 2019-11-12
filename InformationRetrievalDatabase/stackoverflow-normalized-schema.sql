@@ -37,6 +37,8 @@ salt text NOT NULL,
 PRIMARY KEY (userid)
 );
 
+insert into app_users(username, password, salt) values ('cris', 'pass', 'dasadsdsa');
+
 CREATE TABLE annotations (
   annotationid SERIAL NOT NULL,   
   userid INTEGER REFERENCES app_users(userid),
