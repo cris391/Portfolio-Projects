@@ -54,7 +54,18 @@ CREATE TABLE search_history(
 searchdate timestamp, userid text, queryText text);
 
 CREATE TABLE tags(
-value text, questionid int);
+ tagid SERIAL NOT NULL,   
+  value text,
+  PRIMARY KEY (tagid)
+);
+
+INSERT INTO tags(value) values ('c#');
+INSERT INTO tags(value) values ('java');
+INSERT INTO tags(value) values ('js');
+
+CREATE TABLE tags_questions(
+questionid INTEGER REFERENCES questions(questionid),
+tagid INTEGER REFERENCES tags(tagid));
 
 insert into posts(
 postid, creationdate, score, body)
@@ -72,9 +83,6 @@ select distinct commentid, authorid, postid, commentscore, commenttext, commentc
 
 insert into stack_users(userid, usercreationdate, userdisplayname, userlocation, userage) 
 select distinct ownerid, ownercreationdate, ownerdisplayname, ownerlocation, ownerage from posts_universal;
-
-insert into tags(value, questionid)
-select distinct tags, id from posts_universal where posttypeid = 1;
 
 drop view if exists q_view;
 create materialized view q_view as select q.questionid, p.creationdate, p.score, p.body, q.title, q.closeddate, q.acceptedanswerid 
