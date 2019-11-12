@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS search_history cascade;
 DROP TABLE IF EXISTS markings cascade;
 DROP TABLE IF EXISTS annotations cascade;
 DROP TABLE IF EXISTS tags cascade;
+DROP TABLE IF EXISTS tags_questions cascade;
 
 CREATE TABLE posts(
 postid int, creationdate timestamp, score int, body text);
@@ -39,16 +40,21 @@ PRIMARY KEY (userid)
 
 insert into app_users(username, password, salt) values ('cris', 'pass', 'dasadsdsa');
 
-CREATE TABLE annotations (
+CREATE TABLE markings(
+	markingid SERIAL NOT NULL,   
+  userid INTEGER REFERENCES app_users(userid),
+	postid INTEGER REFERENCES questions(questionid),
+  PRIMARY KEY (markingid)
+ );
+ 
+ CREATE TABLE annotations (
   annotationid SERIAL NOT NULL,   
   userid INTEGER REFERENCES app_users(userid),
   questionid INTEGER REFERENCES questions(questionid),
+	markingid INTEGER REFERENCES markings(markingid),
   body TEXT,
   PRIMARY KEY (annotationid)
 );
-
-CREATE TABLE markings(
- userid int, questionid int);
 
 CREATE TABLE search_history(
 searchdate timestamp, userid text, queryText text);
