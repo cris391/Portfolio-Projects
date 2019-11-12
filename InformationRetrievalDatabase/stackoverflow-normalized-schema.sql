@@ -31,7 +31,7 @@ userid int, usercreationdate timestamp, userdisplayname text, userlocation text,
 
 CREATE TABLE app_users(
 userid SERIAL NOT NULL, 
-username text NOT NULL,
+username text UNIQUE NOT NULL ,
 password text NOT NULL,
 salt text NOT NULL,
 PRIMARY KEY (userid)
