@@ -25,10 +25,20 @@ CREATE TABLE stack_users(
 userid int, usercreationdate timestamp, userdisplayname text, userlocation text, userage int);
 
 CREATE TABLE app_users(
-userid int, username text);
+userid SERIAL NOT NULL, 
+username text NOT NULL,
+password text NOT NULL,
+salt text NOT NULL,
+PRIMARY KEY (userid)
+);
 
-CREATE TABLE annotations(
-userid int, questionid int, body text);
+CREATE TABLE annotations (
+  annotationid SERIAL NOT NULL,   
+  userid INTEGER REFERENCES app_users(userid),
+  questionid INTEGER REFERENCES questions(questionid),
+  body TEXT,
+  PRIMARY KEY (annotationid)
+);
 
 CREATE TABLE markings(
  userid int, questionid int);
@@ -55,9 +65,6 @@ select distinct commentid, authorid, postid, commentscore, commenttext, commentc
 
 insert into stack_users(userid, usercreationdate, userdisplayname, userlocation, userage) 
 select distinct ownerid, ownercreationdate, ownerdisplayname, ownerlocation, ownerage from posts_universal;
-
-insert into app_users(userid, username)
-select distinct ownerid, ownerdisplayname from posts_universal;
 
 insert into tags(value, questionid)
 select distinct tags, id from posts_universal where posttypeid = 1;
