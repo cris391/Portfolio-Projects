@@ -13,7 +13,13 @@ CREATE TABLE posts(
 postid int, creationdate timestamp, score int, body text);
 
 CREATE TABLE questions(
-questionid int, closeddate timestamp, title text, acceptedanswerid int, postid int4);
+questionid int, 
+closeddate timestamp, 
+title text, 
+acceptedanswerid int, 
+postid int4,
+PRIMARY KEY (questionid));
+
 
 CREATE TABLE answers(
 answerid int4, postid int4);
