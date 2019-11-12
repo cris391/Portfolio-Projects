@@ -1,13 +1,13 @@
 DROP TABLE IF EXISTS posts cascade;
 DROP TABLE IF EXISTS questions cascade;
 DROP TABLE IF EXISTS answers cascade;
-DROP TABLE IF EXISTS comments;
-DROP TABLE IF EXISTS stack_users;
-DROP TABLE IF EXISTS app_users;
-DROP TABLE IF EXISTS search_history;
-DROP TABLE IF EXISTS markings;
-DROP TABLE IF EXISTS annotations;
-DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS comments cascade;
+DROP TABLE IF EXISTS stack_users cascade;
+DROP TABLE IF EXISTS app_users cascade;
+DROP TABLE IF EXISTS search_history cascade;
+DROP TABLE IF EXISTS markings cascade;
+DROP TABLE IF EXISTS annotations cascade;
+DROP TABLE IF EXISTS tags cascade;
 
 CREATE TABLE posts(
 postid int, creationdate timestamp, score int, body text);
@@ -19,7 +19,6 @@ title text,
 acceptedanswerid int, 
 postid int4,
 PRIMARY KEY (questionid));
-
 
 CREATE TABLE answers(
 answerid int4, postid int4);
