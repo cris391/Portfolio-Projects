@@ -88,11 +88,14 @@ select distinct commentid, authorid, postid, commentscore, commenttext, commentc
 
 insert into app_users(username, password, salt) values 
 	('user1', 'pass', 'dasadsdsa'),
-	('user2', 'pass2', 'haha');
+	('user2', 'pass', 'dasadsdsa'),
+	('user3', 'pass', 'dasadsdsa'),
+	('user4', 'pass2', 'haha');
 
  insert into markings(userid, postid) values
     (1, 16637748),
-    (2, 16637748);
+		(2, 16637748),
+    (3, 16637748);
 
 insert into stack_users(userid, usercreationdate, userdisplayname, userlocation, userage) 
 select distinct ownerid, ownercreationdate, ownerdisplayname, ownerlocation, ownerage from posts_universal;
