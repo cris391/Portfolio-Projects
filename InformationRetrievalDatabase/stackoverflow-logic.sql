@@ -141,7 +141,6 @@ begin
 	return query execute t;
 end $$
 language 'plpgsql';
-​
 -- select * from best_match('of', 'and')
 ​
 --D5
