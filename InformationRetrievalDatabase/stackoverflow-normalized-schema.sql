@@ -38,8 +38,6 @@ salt text NOT NULL,
 PRIMARY KEY (userid)
 );
 
-insert into app_users(username, password, salt) values ('cris', 'pass', 'dasadsdsa');
-
 CREATE TABLE markings(
 	markingid SERIAL NOT NULL,   
   userid INTEGER REFERENCES app_users(userid),
@@ -47,11 +45,12 @@ CREATE TABLE markings(
   PRIMARY KEY (markingid)
  );
  
+ ALTER TABLE markings
+ ADD CONSTRAINT userid_postid UNIQUE (userid,postid);
+ 
  CREATE TABLE annotations (
-  annotationid SERIAL NOT NULL,   
-  userid INTEGER REFERENCES app_users(userid),
-  questionid INTEGER REFERENCES questions(questionid),
-	markingid INTEGER REFERENCES markings(markingid),
+  annotationid SERIAL NOT NULL,
+	markingid INTEGER REFERENCES markings(markingid) ON DELETE CASCADE,
   body TEXT,
   PRIMARY KEY (annotationid)
 );
@@ -86,6 +85,14 @@ select distinct id answerid, parentid from posts_universal where posttypeid = 2;
 
 insert into comments(commentid, userid, postid, commentscore, commenttext, commentcreatedate) 
 select distinct commentid, authorid, postid, commentscore, commenttext, commentcreatedate from comments_universal;
+
+insert into app_users(username, password, salt) values 
+	('user1', 'pass', 'dasadsdsa'),
+	('user2', 'pass2', 'haha');
+
+ insert into markings(userid, postid) values
+    (1, 16637748),
+    (2, 16637748);
 
 insert into stack_users(userid, usercreationdate, userdisplayname, userlocation, userage) 
 select distinct ownerid, ownercreationdate, ownerdisplayname, ownerlocation, ownerage from posts_universal;

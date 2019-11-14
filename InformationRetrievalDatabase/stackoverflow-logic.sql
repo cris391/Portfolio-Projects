@@ -48,19 +48,19 @@ language plpgsql;
 select addMarking(1, 1)
 ​
 -- add an annotation
-drop function if exists addAnnotation(userid int, questionid int, body text)
-create or replace function addAnnotation(userid int, questionid int, body text)
+drop function if exists addAnnotation(markingid int, body text)
+create or replace function addAnnotation(markingid int, body text)
 	returns int as $$ 
 	declare
 	newAnnotationId int;
 	begin
-		INSERT INTO annotations (userid, questionid, body)
-		VALUES (userid, questionid, body) returning annotationid into newAnnotationId;
+		INSERT INTO annotations (markingid, body)
+		VALUES (markingid, body) returning annotationid into newAnnotationId;
 		return newAnnotationId;
 	end;
 	$$
 language plpgsql;
-select addAnnotation(1, 16637748, 'hello there')
+select addAnnotation(2, 'hello there')
 ​
 -- D2 
 --/ We established a new inverted index from the post table where we insert all distinct 
