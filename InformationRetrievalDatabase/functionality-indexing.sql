@@ -14,6 +14,20 @@ language plpgsql;
 -- select addAnnotation(1, 'hello there')
 -- select * from questions where questionid = 16637748
 
+drop function if exists storeSearch(userid int, querytext text);
+create  or replace function storeSearch(userid int, querytext text)
+	returns text as $$ 
+	declare storedsearch text; 
+	begin
+		INSERT INTO search_history (searchdate, userid, querytext)
+		VALUES (NOW(), userid, querytext);
+		storedsearch =  NOW() || ',' || userid || ',' || querytext;
+		return storedsearch;
+	end;
+	$$
+language plpgsql;
+select storeSearch(1, 'keyword')
+
 -- bestmatch with weight setup
 drop table if exists stack_wi;
 create table stack_wi as
@@ -89,6 +103,8 @@ declare
 	t text := 'SELECT q.questionid, sum(tfidf) rank, body FROM q_view q, ';
 	idx integer default 0;
 	w_length int := array_length(w, 1);
+	concatSearchString text := '';
+	storedSearch text;
 begin
 	foreach w_elem in array w
 	loop
@@ -104,8 +120,10 @@ begin
 	if idx = w_length then
 		t := t || 'UNION ALL SELECT distinct id, tfidf FROM weighted_wi WHERE word = ''' || w_elem || ''') t WHERE q.questionid=t.id GROUP BY q.questionid, body ORDER BY rank DESC; ';
 	end if;
+		concatSearchString := concatSearchString || w_elem || ',';
 		
 	end loop;
+	select storeSearch(1, concatSearchString) into storedSearch;
 	return query execute t;
 end $$
 language 'plpgsql';

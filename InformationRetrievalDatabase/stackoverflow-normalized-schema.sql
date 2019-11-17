@@ -8,7 +8,6 @@ DROP TABLE IF EXISTS search_history cascade;
 DROP TABLE IF EXISTS markings cascade;
 DROP TABLE IF EXISTS annotations cascade;
 DROP TABLE IF EXISTS tags cascade;
-DROP TABLE IF EXISTS tags_questions cascade;
 
 CREATE TABLE posts(
 postid int, creationdate timestamp, score int, body text);
@@ -55,22 +54,13 @@ CREATE TABLE markings(
   PRIMARY KEY (annotationid)
 );
 
-CREATE TABLE search_history(
-searchdate timestamp, userid text, queryText text);
-
 CREATE TABLE tags(
- tagid SERIAL NOT NULL,   
-  value text,
-  PRIMARY KEY (tagid)
+ questionid INTEGER REFERENCES questions(questionid),   
+ value text
 );
 
-INSERT INTO tags(value) values ('c#');
-INSERT INTO tags(value) values ('java');
-INSERT INTO tags(value) values ('js');
-
-CREATE TABLE tags_questions(
-questionid INTEGER REFERENCES questions(questionid),
-tagid INTEGER REFERENCES tags(tagid));
+CREATE TABLE search_history(
+searchdate timestamp, userid text, queryText text);
 
 insert into posts(
 postid, creationdate, score, body)
@@ -96,6 +86,9 @@ insert into app_users(username, password, salt) values
     (1, 16637748),
 		(2, 16637748),
     (3, 16637748);
+		
+insert into tags(questionid, value) 
+select id, tags from posts_universal where posttypeid = 1;
 
 insert into stack_users(userid, usercreationdate, userdisplayname, userlocation, userage) 
 select distinct ownerid, ownercreationdate, ownerdisplayname, ownerlocation, ownerage from posts_universal;
