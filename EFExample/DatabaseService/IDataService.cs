@@ -5,10 +5,12 @@ namespace DatabaseService
 {
   public interface IDataService
   {
-    Category CreateCategory(string name, string description);
+    Category CreateCategory(Category category);
     // Category CreateCategory(Category category);
     bool DeleteCategory(int id);
-    List<Category> GetCategories();
+    IList<Category> GetCategories(PagingAttributes pagingAttributes);
+    // IList<Category> GetCategories();
+    int NumberOfCategories();
     Category GetCategory(int id);
     Order GetOrder(int id);
     List<OrderDetails> GetOrderDetailsByOrderId(int id);

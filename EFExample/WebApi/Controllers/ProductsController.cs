@@ -18,11 +18,11 @@ namespace WebApi.Controllers
       _dataService = dataService;
     }
 
-    [HttpGet]
-    public IList<Category> GetCategories()
-    {
-      return _dataService.GetCategories();
-    }
+    // [HttpGet]
+    // public IList<Category> GetCategories()
+    // {
+    //   return _dataService.GetCategories();
+    // }
 
     [HttpGet("{productId}")]
     public ActionResult<Category> GetProduct(int productId)
@@ -34,37 +34,55 @@ namespace WebApi.Controllers
       return Ok(product);
     }
 
-    [HttpPost]
-    public ActionResult CreateCategory([FromBody] Category category)
+    [HttpGet("category/{categoryId}")]
+    public ActionResult<Category> GetProductByCategory(int categoryId)
     {
-      var cat = _dataService.CreateCategory(category.Name, category.Description);
+      var product = _dataService.GetProductByCategory(categoryId);
+      if (product.Count == 0) return NotFound(product);
 
-      return Created("post", cat);
+      return Ok(product);
     }
 
-    [HttpPut("{categoryId}")]
-    public ActionResult PutCategory([FromBody] Category category, int categoryId)
+    [HttpGet("name/{name}")]
+    public ActionResult<Category> GetProductByName(string name)
     {
-      var cat = _dataService.PutCategory(categoryId, category.Name, category.Description);
-      if (cat == false)
-      {
-        return NotFound();
-      }
+      var product = _dataService.GetProductByName(name);
+      if (product.Count == 0) return NotFound(product);
 
-      return Ok(cat);
+      return Ok(product);
     }
 
-    [HttpDelete("{categoryId}")]
-    public ActionResult<Category> DeleteCategory(int categoryId)
-    {
-      // var category = _dataService.DeleteCategory(categoryId);
+    // [HttpPost]
+    // public ActionResult CreateCategory([FromBody] Category category)
+    // {
+    //   var cat = _dataService.CreateCategory(category.Name, category.Description);
 
-      if (_dataService.DeleteCategory(categoryId) == false)
-      {
-        return NotFound();
-      }
+    //   return Created("post", cat);
+    // }
 
-      return Ok();
-    }
+    // [HttpPut("{categoryId}")]
+    // public ActionResult PutCategory([FromBody] Category category, int categoryId)
+    // {
+    //   var cat = _dataService.PutCategory(categoryId, category.Name, category.Description);
+    //   if (cat == false)
+    //   {
+    //     return NotFound();
+    //   }
+
+    //   return Ok(cat);
+    // }
+
+    // [HttpDelete("{categoryId}")]
+    // public ActionResult<Category> DeleteCategory(int categoryId)
+    // {
+    //   // var category = _dataService.DeleteCategory(categoryId);
+
+    //   if (_dataService.DeleteCategory(categoryId) == false)
+    //   {
+    //     return NotFound();
+    //   }
+
+    //   return Ok();
+    // }
   }
 }

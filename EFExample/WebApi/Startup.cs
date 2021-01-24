@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DatabaseService;
+using AutoMapper;
 
 namespace WebApi
 {
@@ -18,6 +19,8 @@ namespace WebApi
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddControllers();
+
+      services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
       services.AddSingleton<IDataService, DataService>();
     }
